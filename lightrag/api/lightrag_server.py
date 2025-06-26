@@ -59,7 +59,7 @@ from lightrag.api.auth import auth_handler
 # use the .env that is inside the current folder
 # allows to use different .env file for each lightrag instance
 # the OS environment variables take precedence over the .env file
-load_dotenv(dotenv_path=".env", override=False)
+load_dotenv(dotenv_path=".env", override=True)
 
 
 webui_title = os.getenv("WEBUI_TITLE")
@@ -88,7 +88,8 @@ def create_app(args):
     ]:
         raise Exception("llm binding not supported")
 
-    if args.embedding_binding not in ["lollms", "ollama", "openai", "azure_openai"]:
+    logger.info(f"Using LLM embedding binding: {args.embedding_binding}")
+    if args.embedding_binding not in ["lollms", "ollama", "openai", "azure_openai","zhipu"]:
         raise Exception("embedding binding not supported")
 
     # Set default hosts if not provided
@@ -209,6 +210,8 @@ def create_app(args):
             azure_openai_complete_if_cache,
             azure_openai_embed,
         )
+    if args.llm_binding == "zhipu" or args.embedding_binding == "zhipu":
+        from lightrag.llm.zhipu import zhipu_complete_if_cache, zhipu_embedding
     if args.llm_binding_host == "openai-ollama" or args.embedding_binding == "ollama":
         from lightrag.llm.openai import openai_complete_if_cache
         from lightrag.llm.ollama import ollama_embed
@@ -288,7 +291,13 @@ def create_app(args):
             model=args.embedding_model,
             base_url=args.embedding_binding_host,
             api_key=args.embedding_binding_api_key,
-        ),
+        )
+        if args.embedding_binding == "openai"
+        else zhipu_embedding(
+            texts,
+            model=args.embedding_model,
+            api_key=args.embedding_binding_api_key,
+        )
     )
 
     # Initialize RAG

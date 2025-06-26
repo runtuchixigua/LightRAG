@@ -197,7 +197,7 @@ async def zhipu_embedding(
     embeddings = []
     for text in texts:
         try:
-            response = client.embeddings.create(model=model, input=[text], **kwargs)
+            response = client.embeddings.create(model=model, input=[text],dimensions=1024, **kwargs)
             embeddings.append(response.data[0].embedding)
         except Exception as e:
             raise Exception(f"Error calling ChatGLM Embedding API: {str(e)}")
