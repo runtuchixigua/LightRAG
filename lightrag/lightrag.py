@@ -1931,6 +1931,8 @@ class LightRAG:
                         logger.error(f"Failed to delete relationships: {e}")
                         raise Exception(f"Failed to delete relationships: {e}") from e
 
+                logger.info("entities_to_rebuild: %s", entities_to_rebuild)
+                logger.info("relationships_to_rebuild: %s", relationships_to_rebuild)
                 # 8. Rebuild entities and relationships from remaining chunks
                 if entities_to_rebuild or relationships_to_rebuild:
                     try:

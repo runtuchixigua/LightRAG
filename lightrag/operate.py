@@ -262,7 +262,10 @@ async def _rebuild_knowledge_from_chunks(
     """
     if not entities_to_rebuild and not relationships_to_rebuild:
         return
-
+    
+    logger.info(f"entities_to_rebuild: {entities_to_rebuild}")
+    logger.info(f"relationships_to_rebuild: {relationships_to_rebuild}")
+    
     # Get all referenced chunk IDs
     all_referenced_chunk_ids = set()
     for chunk_ids in entities_to_rebuild.values():
@@ -354,9 +357,11 @@ async def _get_cached_extraction_results(
         Dict mapping chunk_id -> extraction_result_text
     """
     cached_results = {}
+    logger.info(f"chunk_ids to get cached results: {chunk_ids}")
 
     # Get all cached data for "default" mode (entity extraction cache)
     default_cache = await llm_response_cache.get_by_id("default") or {}
+    logger.info(f"count of default_cache: {len(default_cache)}")
 
     for cache_key, cache_entry in default_cache.items():
         if (
@@ -447,6 +452,7 @@ async def _rebuild_single_entity(
 ) -> None:
     """Rebuild a single entity from cached extraction results"""
 
+    logger.info(f"Rebuilding entity {entity_name}")
     # Get current entity data
     current_entity = await knowledge_graph_inst.get_node(entity_name)
     if not current_entity:
